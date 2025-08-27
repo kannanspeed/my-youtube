@@ -589,6 +589,27 @@
             font-size: 0.875rem;
             color: var(--buffer-text-secondary);
             margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .schedule-options .form-select,
+        .schedule-options .form-control {
+            border: 1px solid var(--buffer-border);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        
+        .schedule-options .form-select:focus,
+        .schedule-options .form-control:focus {
+            border-color: var(--buffer-primary);
+            box-shadow: 0 0 0 0.2rem rgba(22, 142, 234, 0.25);
+            outline: none;
+        }
+        
+        #scheduleDateTime {
+            transition: all 0.3s ease;
         }
         
         /* Publish Section Styles */
@@ -1370,15 +1391,13 @@
         }
         
         .create-sidebar {
-            position: fixed;
-            left: 20px;
-            top: 120px;
-            width: 250px;
             background: var(--buffer-bg-primary);
             border: 1px solid var(--buffer-border);
             border-radius: 12px;
             padding: 1.5rem;
             height: fit-content;
+            position: sticky;
+            top: 80px;
         }
         
         .sidebar-menu {
@@ -2097,6 +2116,33 @@
             }
         }
         
+        function initializeScheduleDateTime() {
+            const scheduleTimeInput = document.getElementById('scheduleTime');
+            if (scheduleTimeInput) {
+                // Set minimum date to current date/time
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                
+                const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                scheduleTimeInput.min = minDateTime;
+                
+                // Set default to 1 hour from now
+                const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+                const defaultYear = oneHourLater.getFullYear();
+                const defaultMonth = String(oneHourLater.getMonth() + 1).padStart(2, '0');
+                const defaultDay = String(oneHourLater.getDate()).padStart(2, '0');
+                const defaultHours = String(oneHourLater.getHours()).padStart(2, '0');
+                const defaultMinutes = String(oneHourLater.getMinutes()).padStart(2, '0');
+                
+                const defaultDateTime = `${defaultYear}-${defaultMonth}-${defaultDay}T${defaultHours}:${defaultMinutes}`;
+                scheduleTimeInput.value = defaultDateTime;
+            }
+        }
+        
         function toggleScheduleOptions() {
             const scheduleType = document.getElementById('scheduleType').value;
             const scheduleDateTime = document.getElementById('scheduleDateTime');
@@ -2105,6 +2151,8 @@
             if (scheduleType === 'schedule') {
                 scheduleDateTime.style.display = 'block';
                 submitText.textContent = 'Schedule Upload';
+                // Initialize the datetime input when scheduling is selected
+                initializeScheduleDateTime();
             } else if (scheduleType === 'draft') {
                 scheduleDateTime.style.display = 'none';
                 submitText.textContent = 'Save as Draft';
@@ -2246,6 +2294,12 @@
             document.getElementById('descCounter').textContent = '0';
             removeFile();
             toggleScheduleOptions();
+            
+            // Hide the schedule datetime input
+            const scheduleDateTime = document.getElementById('scheduleDateTime');
+            if (scheduleDateTime) {
+                scheduleDateTime.style.display = 'none';
+            }
         }
         
         function saveUploadHistory(uploadResult) {
