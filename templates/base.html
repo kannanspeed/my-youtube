@@ -1791,8 +1791,11 @@
                                 </select>
                             </div>
                             <div class="col-md-6" id="scheduleDateTime" style="display: none;">
-                                <label for="scheduleTime" class="form-label">Schedule Date & Time</label>
+                                <label for="scheduleTime" class="form-label">Schedule Date & Time (IST)</label>
                                 <input type="datetime-local" class="form-control" id="scheduleTime">
+                                <div class="form-text">
+                                    <i class="fas fa-clock"></i> Current IST Time: <span id="istTimeDisplay"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2119,24 +2122,27 @@
         function initializeScheduleDateTime() {
             const scheduleTimeInput = document.getElementById('scheduleTime');
             if (scheduleTimeInput) {
-                // Set minimum date to current date/time
+                // Get current time in IST (UTC+5:30)
                 const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+                const istTime = new Date(now.getTime() + istOffset);
+                
+                const year = istTime.getUTCFullYear();
+                const month = String(istTime.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(istTime.getUTCDate()).padStart(2, '0');
+                const hours = String(istTime.getUTCHours()).padStart(2, '0');
+                const minutes = String(istTime.getUTCMinutes()).padStart(2, '0');
                 
                 const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
                 scheduleTimeInput.min = minDateTime;
                 
-                // Set default to 1 hour from now
-                const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-                const defaultYear = oneHourLater.getFullYear();
-                const defaultMonth = String(oneHourLater.getMonth() + 1).padStart(2, '0');
-                const defaultDay = String(oneHourLater.getDate()).padStart(2, '0');
-                const defaultHours = String(oneHourLater.getHours()).padStart(2, '0');
-                const defaultMinutes = String(oneHourLater.getMinutes()).padStart(2, '0');
+                // Set default to 1 hour from now in IST
+                const oneHourLater = new Date(istTime.getTime() + 60 * 60 * 1000);
+                const defaultYear = oneHourLater.getUTCFullYear();
+                const defaultMonth = String(oneHourLater.getUTCMonth() + 1).padStart(2, '0');
+                const defaultDay = String(oneHourLater.getUTCDate()).padStart(2, '0');
+                const defaultHours = String(oneHourLater.getUTCHours()).padStart(2, '0');
+                const defaultMinutes = String(oneHourLater.getUTCMinutes()).padStart(2, '0');
                 
                 const defaultDateTime = `${defaultYear}-${defaultMonth}-${defaultDay}T${defaultHours}:${defaultMinutes}`;
                 scheduleTimeInput.value = defaultDateTime;
@@ -2153,12 +2159,25 @@
                 submitText.textContent = 'Schedule Upload';
                 // Initialize the datetime input when scheduling is selected
                 initializeScheduleDateTime();
+                // Update IST time display
+                updateISTTimeDisplay();
+                // Update IST time every second when scheduling is active
+                if (window.istTimeInterval) {
+                    clearInterval(window.istTimeInterval);
+                }
+                window.istTimeInterval = setInterval(updateISTTimeDisplay, 1000);
             } else if (scheduleType === 'draft') {
                 scheduleDateTime.style.display = 'none';
                 submitText.textContent = 'Save as Draft';
+                if (window.istTimeInterval) {
+                    clearInterval(window.istTimeInterval);
+                }
             } else {
                 scheduleDateTime.style.display = 'none';
                 submitText.textContent = 'Post Now';
+                if (window.istTimeInterval) {
+                    clearInterval(window.istTimeInterval);
+                }
             }
         }
         
@@ -2191,7 +2210,11 @@
             formData.append('privacy_status', privacy);
             
             if (scheduleType === 'schedule' && scheduleTime) {
-                formData.append('schedule_time', new Date(scheduleTime).toISOString());
+                // Convert the selected datetime to IST and then to ISO string
+                const selectedDate = new Date(scheduleTime);
+                const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+                const istTime = new Date(selectedDate.getTime() - istOffset);
+                formData.append('schedule_time', istTime.toISOString());
             }
             
             // Show loading state
@@ -2300,6 +2323,11 @@
             if (scheduleDateTime) {
                 scheduleDateTime.style.display = 'none';
             }
+            
+            // Clear IST time interval
+            if (window.istTimeInterval) {
+                clearInterval(window.istTimeInterval);
+            }
         }
         
         function saveUploadHistory(uploadResult) {
@@ -2312,6 +2340,28 @@
         function loadUploadHistory() {
             // This will be used in the publish page to show history
             return JSON.parse(localStorage.getItem('uploadHistory') || '[]');
+        }
+        
+        function getCurrentISTTime() {
+            const now = new Date();
+            const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+            const istTime = new Date(now.getTime() + istOffset);
+            return istTime.toLocaleString('en-IN', { 
+                timeZone: 'Asia/Kolkata',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        function updateISTTimeDisplay() {
+            const istTimeElement = document.getElementById('istTimeDisplay');
+            if (istTimeElement) {
+                istTimeElement.textContent = getCurrentISTTime();
+            }
         }
     </script>
     
