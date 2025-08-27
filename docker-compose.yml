@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  youtube-uploader:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-this-in-production}
+      - REDIRECT_URI=${REDIRECT_URI:-http://localhost:5000/callback}
+      - FLASK_ENV=production
+    volumes:
+      - ./client_secret.json:/app/client_secret.json:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
