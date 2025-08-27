@@ -73,7 +73,8 @@ def health_check():
 @app.route('/')
 def index():
     """Main page"""
-    return render_template('index.html')
+    no_channel_error = session.pop('no_channel_error', False)
+    return render_template('index.html', no_channel_error=no_channel_error)
 
 @app.route('/login')
 def login():
@@ -114,6 +115,24 @@ def callback():
         credentials = flow.credentials
         session['credentials'] = credentials_to_dict(credentials)
         logger.info("OAuth2 authentication successful")
+        
+        # Check if user has YouTube channels
+        try:
+            youtube = build('youtube', 'v3', credentials=credentials)
+            channels_request = youtube.channels().list(part='snippet', mine=True)
+            channels_response = channels_request.execute()
+            
+            if not channels_response.get('items'):
+                logger.warning("No YouTube channels found for user")
+                session['no_channel_error'] = True
+                return redirect(url_for('index'))
+            
+            logger.info(f"Found {len(channels_response['items'])} YouTube channel(s)")
+            
+        except Exception as channel_error:
+            logger.error(f"Failed to check YouTube channels: {str(channel_error)}")
+            session['no_channel_error'] = True
+            return redirect(url_for('index'))
         
         return redirect(url_for('upload_page'))
     except Exception as e:
@@ -168,34 +187,22 @@ def upload_video():
         }
         
         if schedule_time:
-            # Use YouTube's native scheduling instead of local scheduling
+            # Check if scheduling is available
+            if not SCHEDULE_AVAILABLE:
+                return jsonify({'error': 'Scheduling is not available in this environment. Please upload immediately.'}), 400
+            
+            # Schedule the upload
             schedule_datetime = datetime.fromisoformat(schedule_time.replace('T', ' '))
-            
-            # Set the publishAt time in YouTube metadata
-            video_metadata['status']['publishAt'] = schedule_datetime.isoformat() + 'Z'
-            
-            # Upload immediately but with scheduled publish time
-            credentials = Credentials(**session['credentials'])
-            youtube = build('youtube', 'v3', credentials=credentials)
-            
-            media = MediaFileUpload(temp_file_path, chunksize=-1, resumable=True)
-            
-            request_body = youtube.videos().insert(
-                part='snippet,status',
-                body=video_metadata,
-                media_body=media
-            )
-            
-            response = request_body.execute()
-            
-            # Clean up temp file
-            os.remove(temp_file_path)
-            os.rmdir(temp_dir)
+            scheduled_upload = {
+                'video_metadata': video_metadata,
+                'file_path': temp_file_path,
+                'schedule_time': schedule_datetime,
+                'credentials': session['credentials']
+            }
+            scheduled_uploads.append(scheduled_upload)
             
             return jsonify({
-                'message': f'Video uploaded and scheduled for publication at {schedule_time}',
-                'video_id': response['id'],
-                'video_url': f'https://youtube.com/watch?v={response["id"]}',
+                'message': f'Video scheduled for upload at {schedule_time}',
                 'scheduled': True
             })
         else:
@@ -228,38 +235,19 @@ def upload_video():
 
 @app.route('/scheduled_uploads')
 def get_scheduled_uploads():
-    """Get list of scheduled uploads from YouTube"""
+    """Get list of scheduled uploads"""
     if 'credentials' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
-    try:
-        credentials = Credentials(**session['credentials'])
-        youtube = build('youtube', 'v3', credentials=credentials)
-        
-        # Get videos that are scheduled for future publication
-        request = youtube.videos().list(
-            part='snippet,status',
-            myRating='none',
-            maxResults=50
-        )
-        
-        response = request.execute()
-        
-        scheduled_videos = []
-        for video in response.get('items', []):
-            if video.get('status', {}).get('privacyStatus') == 'private' and 'publishAt' in video.get('status', {}):
-                scheduled_videos.append({
-                    'title': video['snippet']['title'],
-                    'schedule_time': video['status']['publishAt'],
-                    'video_id': video['id'],
-                    'status': 'scheduled'
-                })
-        
-        return jsonify({'scheduled_uploads': scheduled_videos})
-        
-    except Exception as e:
-        logger.error(f"Failed to get scheduled uploads: {str(e)}")
-        return jsonify({'error': f'Failed to get scheduled uploads: {str(e)}'}), 500
+    uploads = []
+    for upload in scheduled_uploads:
+        uploads.append({
+            'title': upload['video_metadata']['snippet']['title'],
+            'schedule_time': upload['schedule_time'].isoformat(),
+            'status': 'scheduled'
+        })
+    
+    return jsonify({'scheduled_uploads': uploads})
 
 @app.route('/logout')
 def logout():

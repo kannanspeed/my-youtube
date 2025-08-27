@@ -6,6 +6,26 @@
     <p>Upload and schedule your videos with ease</p>
 </div>
 
+<!-- No Channel Error Banner -->
+{% if no_channel_error %}
+<div class="container mb-4">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5 class="alert-heading">
+            <i class="fas fa-exclamation-triangle me-2"></i>No YouTube Channel Found
+        </h5>
+        <p class="mb-2">
+            <strong>Whoops, we couldn't find any YouTube channel in your account</strong>
+        </p>
+        <p class="mb-0">
+            Make sure you're signing in with a YouTube account with existing YouTube channels.
+            <br>
+            If you don't have a channel yet, please <a href="https://www.youtube.com/create_channel" target="_blank" class="alert-link">create one on YouTube</a> first.
+        </p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endif %}
+
 <div class="content-area">
     <div class="row">
         <div class="col-lg-6">
