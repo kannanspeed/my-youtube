@@ -7,7 +7,12 @@ import os
 import json
 import tempfile
 from datetime import datetime, timedelta
-import schedule
+try:
+    import schedule
+    SCHEDULE_AVAILABLE = True
+except ImportError:
+    SCHEDULE_AVAILABLE = False
+    print("Warning: schedule module not available. Scheduling features will be disabled.")
 import threading
 import time
 
@@ -119,6 +124,10 @@ def upload_video():
         }
         
         if schedule_time:
+            # Check if scheduling is available
+            if not SCHEDULE_AVAILABLE:
+                return jsonify({'error': 'Scheduling is not available in this environment. Please upload immediately.'}), 400
+            
             # Schedule the upload
             schedule_datetime = datetime.fromisoformat(schedule_time.replace('T', ' '))
             scheduled_upload = {
@@ -238,8 +247,8 @@ def schedule_checker():
         time.sleep(60)  # Check every minute
 
 if __name__ == '__main__':
-    # Start background scheduler only in development
-    if app.debug:
+    # Start background scheduler only in development and if schedule is available
+    if app.debug and SCHEDULE_AVAILABLE:
         scheduler_thread = threading.Thread(target=schedule_checker, daemon=True)
         scheduler_thread.start()
     
