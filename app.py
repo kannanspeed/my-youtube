@@ -139,6 +139,20 @@ def callback():
         logger.error(f"Callback failed: {str(e)}")
         return jsonify({'error': f'Callback failed: {str(e)}'}), 500
 
+@app.route('/create')
+def create_page():
+    """Create page with Kanban board - only accessible after authentication"""
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+    return render_template('create.html')
+
+@app.route('/templates')
+def templates_page():
+    """Templates page - only accessible after authentication"""
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+    return render_template('templates.html')
+
 @app.route('/publish')
 def publish_page():
     """Main publish page - only accessible after authentication"""
