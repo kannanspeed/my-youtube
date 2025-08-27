@@ -2210,11 +2210,12 @@
             formData.append('privacy_status', privacy);
             
             if (scheduleType === 'schedule' && scheduleTime) {
-                // Convert the selected datetime to IST and then to ISO string
+                // Convert the selected datetime to UTC for server
                 const selectedDate = new Date(scheduleTime);
-                const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-                const istTime = new Date(selectedDate.getTime() - istOffset);
-                formData.append('schedule_time', istTime.toISOString());
+                // The datetime-local input gives us local time, but we want to send UTC
+                // Since the input is already in IST, we need to convert it to UTC
+                const utcTime = new Date(selectedDate.getTime() - (5.5 * 60 * 60 * 1000));
+                formData.append('schedule_time', utcTime.toISOString());
             }
             
             // Show loading state

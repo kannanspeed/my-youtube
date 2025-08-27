@@ -370,6 +370,8 @@ def credentials_to_dict(credentials):
 def upload_scheduled_video(upload_data):
     """Upload a scheduled video"""
     try:
+        logger.info(f"Starting scheduled upload for: {upload_data['video_metadata']['snippet']['title']}")
+        
         credentials = Credentials(**upload_data['credentials'])
         youtube = build('youtube', 'v3', credentials=credentials)
         
@@ -382,27 +384,35 @@ def upload_scheduled_video(upload_data):
         )
         
         response = request_body.execute()
-        print(f"Scheduled video uploaded: {response['id']}")
+        logger.info(f"Scheduled video uploaded successfully: {response['id']}")
         
         # Clean up temp file
         os.remove(upload_data['file_path'])
+        logger.info(f"Temporary file cleaned up: {upload_data['file_path']}")
         
     except Exception as e:
-        print(f"Failed to upload scheduled video: {str(e)}")
+        logger.error(f"Failed to upload scheduled video: {str(e)}")
 
 def check_scheduled_uploads():
     """Check and process scheduled uploads"""
     current_time = datetime.now()
     uploads_to_remove = []
     
+    logger.info(f"Checking scheduled uploads at {current_time}. Total scheduled: {len(scheduled_uploads)}")
+    
     for i, upload in enumerate(scheduled_uploads):
-        if current_time >= upload['schedule_time']:
+        schedule_time = upload['schedule_time']
+        logger.info(f"Checking upload {i}: scheduled for {schedule_time}, current time: {current_time}")
+        
+        if current_time >= schedule_time:
+            logger.info(f"Processing scheduled upload: {upload['video_metadata']['snippet']['title']}")
             upload_scheduled_video(upload)
             uploads_to_remove.append(i)
     
     # Remove processed uploads
     for i in reversed(uploads_to_remove):
         scheduled_uploads.pop(i)
+        logger.info(f"Removed processed upload {i}")
 
 def schedule_checker():
     """Background thread to check scheduled uploads"""
@@ -411,10 +421,13 @@ def schedule_checker():
         time.sleep(60)  # Check every minute
 
 if __name__ == '__main__':
-    # Start background scheduler only in development and if schedule is available
-    if app.debug and SCHEDULE_AVAILABLE:
+    # Start background scheduler if schedule is available (both dev and production)
+    if SCHEDULE_AVAILABLE:
         scheduler_thread = threading.Thread(target=schedule_checker, daemon=True)
         scheduler_thread.start()
+        logger.info("Scheduler thread started successfully")
+    else:
+        logger.warning("Scheduler not available - scheduled uploads will not work")
     
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
