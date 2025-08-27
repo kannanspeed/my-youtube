@@ -233,8 +233,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 descCount.textContent = '0';
                 submitText.textContent = 'Upload Video';
             } else {
-                const error = JSON.parse(xhr.responseText);
-                showAlert(error.error || 'Upload failed', 'danger');
+                try {
+                    const error = JSON.parse(xhr.responseText);
+                    const errorMessage = error.error || 'Upload failed';
+                    showAlert(`<strong>Upload Error (${xhr.status}):</strong><br>${errorMessage}`, 'danger');
+                } catch (parseError) {
+                    showAlert(`<strong>Upload Error (${xhr.status}):</strong><br>Failed to parse error response: ${xhr.responseText}`, 'danger');
+                }
             }
             
             // Reset form state
@@ -244,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         xhr.addEventListener('error', function() {
-            showAlert('Network error occurred', 'danger');
+            showAlert('<strong>Network Error:</strong><br>Failed to connect to server. Please check your internet connection and try again.', 'danger');
             submitBtn.disabled = false;
             progressContainer.style.display = 'none';
             progressBar.style.width = '0%';

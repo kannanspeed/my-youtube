@@ -149,7 +149,10 @@ def upload_page():
 @app.route('/upload_video', methods=['POST'])
 def upload_video():
     """Handle video upload"""
+    logger.info("=== UPLOAD VIDEO REQUEST STARTED ===")
+    
     if 'credentials' not in session:
+        logger.error("Upload failed: User not authenticated")
         return jsonify({'error': 'Not authenticated'}), 401
     
     try:
@@ -160,18 +163,34 @@ def upload_video():
         privacy_status = request.form.get('privacy_status', 'private')
         schedule_time = request.form.get('schedule_time')
         
+        logger.info(f"Form data received - Title: {title}, Privacy: {privacy_status}, Schedule: {schedule_time}")
+        
         # Get uploaded file
         if 'video_file' not in request.files:
+            logger.error("Upload failed: No video file in request")
             return jsonify({'error': 'No video file provided'}), 400
         
         video_file = request.files['video_file']
         if video_file.filename == '':
+            logger.error("Upload failed: Empty filename")
             return jsonify({'error': 'No file selected'}), 400
         
+        logger.info(f"Video file received: {video_file.filename}, Size: {video_file.content_length} bytes")
+        
+        # Validate file size (128GB = 137438953472 bytes)
+        if video_file.content_length and video_file.content_length > 137438953472:
+            logger.error(f"Upload failed: File too large - {video_file.content_length} bytes")
+            return jsonify({'error': f'File size ({video_file.content_length} bytes) exceeds 128GB limit'}), 400
+        
         # Save file temporarily
-        temp_dir = tempfile.mkdtemp()
-        temp_file_path = os.path.join(temp_dir, video_file.filename)
-        video_file.save(temp_file_path)
+        try:
+            temp_dir = tempfile.mkdtemp()
+            temp_file_path = os.path.join(temp_dir, video_file.filename)
+            video_file.save(temp_file_path)
+            logger.info(f"File saved temporarily: {temp_file_path}")
+        except Exception as save_error:
+            logger.error(f"Failed to save file: {str(save_error)}")
+            return jsonify({'error': f'Failed to save file: {str(save_error)}'}), 500
         
         # Prepare video metadata
         video_metadata = {
@@ -186,51 +205,91 @@ def upload_video():
             }
         }
         
+        logger.info(f"Video metadata prepared: {video_metadata}")
+        
         if schedule_time:
+            logger.info(f"Scheduling video for: {schedule_time}")
             # Check if scheduling is available
             if not SCHEDULE_AVAILABLE:
+                logger.error("Scheduling not available in this environment")
                 return jsonify({'error': 'Scheduling is not available in this environment. Please upload immediately.'}), 400
             
             # Schedule the upload
-            schedule_datetime = datetime.fromisoformat(schedule_time.replace('T', ' '))
-            scheduled_upload = {
-                'video_metadata': video_metadata,
-                'file_path': temp_file_path,
-                'schedule_time': schedule_datetime,
-                'credentials': session['credentials']
-            }
-            scheduled_uploads.append(scheduled_upload)
-            
-            return jsonify({
-                'message': f'Video scheduled for upload at {schedule_time}',
-                'scheduled': True
-            })
+            try:
+                schedule_datetime = datetime.fromisoformat(schedule_time.replace('T', ' '))
+                scheduled_upload = {
+                    'video_metadata': video_metadata,
+                    'file_path': temp_file_path,
+                    'schedule_time': schedule_datetime,
+                    'credentials': session['credentials']
+                }
+                scheduled_uploads.append(scheduled_upload)
+                logger.info(f"Video scheduled successfully for {schedule_time}")
+                
+                return jsonify({
+                    'message': f'Video scheduled for upload at {schedule_time}',
+                    'scheduled': True
+                })
+            except Exception as schedule_error:
+                logger.error(f"Failed to schedule video: {str(schedule_error)}")
+                return jsonify({'error': f'Failed to schedule video: {str(schedule_error)}'}), 500
         else:
+            logger.info("Starting immediate upload to YouTube")
             # Upload immediately
-            credentials = Credentials(**session['credentials'])
-            youtube = build('youtube', 'v3', credentials=credentials)
-            
-            media = MediaFileUpload(temp_file_path, chunksize=-1, resumable=True)
-            
-            request_body = youtube.videos().insert(
-                part='snippet,status',
-                body=video_metadata,
-                media_body=media
-            )
-            
-            response = request_body.execute()
-            
-            # Clean up temp file
-            os.remove(temp_file_path)
-            os.rmdir(temp_dir)
-            
-            return jsonify({
-                'message': 'Video uploaded successfully!',
-                'video_id': response['id'],
-                'video_url': f'https://youtube.com/watch?v={response["id"]}'
-            })
+            try:
+                credentials = Credentials(**session['credentials'])
+                logger.info("Credentials loaded successfully")
+                
+                youtube = build('youtube', 'v3', credentials=credentials)
+                logger.info("YouTube API client created")
+                
+                media = MediaFileUpload(temp_file_path, chunksize=-1, resumable=True)
+                logger.info("Media file upload object created")
+                
+                logger.info("Executing YouTube upload request...")
+                request_body = youtube.videos().insert(
+                    part='snippet,status',
+                    body=video_metadata,
+                    media_body=media
+                )
+                
+                response = request_body.execute()
+                logger.info(f"YouTube upload successful! Video ID: {response['id']}")
+                
+                # Clean up temp file
+                try:
+                    os.remove(temp_file_path)
+                    os.rmdir(temp_dir)
+                    logger.info("Temporary files cleaned up")
+                except Exception as cleanup_error:
+                    logger.warning(f"Failed to cleanup temp files: {str(cleanup_error)}")
+                
+                return jsonify({
+                    'message': 'Video uploaded successfully!',
+                    'video_id': response['id'],
+                    'video_url': f'https://youtube.com/watch?v={response["id"]}'
+                })
+                
+            except Exception as upload_error:
+                logger.error(f"YouTube upload failed: {str(upload_error)}")
+                logger.error(f"Error type: {type(upload_error).__name__}")
+                
+                # Clean up temp file on error
+                try:
+                    if os.path.exists(temp_file_path):
+                        os.remove(temp_file_path)
+                    if os.path.exists(temp_dir):
+                        os.rmdir(temp_dir)
+                    logger.info("Temporary files cleaned up after error")
+                except Exception as cleanup_error:
+                    logger.warning(f"Failed to cleanup temp files after error: {str(cleanup_error)}")
+                
+                return jsonify({'error': f'YouTube upload failed: {str(upload_error)}'}), 500
             
     except Exception as e:
+        logger.error(f"Unexpected error in upload_video: {str(e)}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error details: {e}")
         return jsonify({'error': f'Upload failed: {str(e)}'}), 500
 
 @app.route('/scheduled_uploads')

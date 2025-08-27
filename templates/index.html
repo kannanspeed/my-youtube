@@ -2,93 +2,122 @@
 
 {% block content %}
 <div class="header">
-    <h1><i class="fab fa-youtube"></i> YouTube Video Uploader</h1>
-    <p>Upload and schedule your videos with ease</p>
+    <div class="container">
+        <h1><i class="fab fa-youtube" style="color: var(--buffer-primary);"></i> YouTube Video Uploader</h1>
+        <p>Grow your audience with effortless video uploads and smart scheduling</p>
+    </div>
 </div>
 
 <!-- No Channel Error Banner -->
 {% if no_channel_error %}
-<div class="container mb-4">
+<div class="container">
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <h5 class="alert-heading">
-            <i class="fas fa-exclamation-triangle me-2"></i>No YouTube Channel Found
-        </h5>
-        <p class="mb-2">
-            <strong>Whoops, we couldn't find any YouTube channel in your account</strong>
-        </p>
-        <p class="mb-0">
-            Make sure you're signing in with a YouTube account with existing YouTube channels.
-            <br>
-            If you don't have a channel yet, please <a href="https://www.youtube.com/create_channel" target="_blank" class="alert-link">create one on YouTube</a> first.
-        </p>
+        <div class="d-flex align-items-start">
+            <i class="fas fa-exclamation-triangle me-3 mt-1" style="color: var(--buffer-danger);"></i>
+            <div class="flex-grow-1">
+                <h6 class="alert-heading mb-2">No YouTube Channel Found</h6>
+                <p class="mb-2">
+                    <strong>Whoops, we couldn't find any YouTube channel in your account</strong>
+                </p>
+                <p class="mb-0">
+                    Make sure you're signing in with a YouTube account with existing YouTube channels.
+                    If you don't have a channel yet, please <a href="https://www.youtube.com/create_channel" target="_blank" class="alert-link">create one on YouTube</a> first.
+                </p>
+            </div>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </div>
 {% endif %}
 
-<div class="content-area">
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="text-center mb-4">
-                <h2>Welcome!</h2>
-                <p class="text-muted">Connect your YouTube account to start uploading and scheduling videos</p>
-                
-                <div class="d-grid gap-2 col-6 mx-auto">
-                    <a href="/login" class="btn btn-google">
-                        <i class="fab fa-google me-2"></i>
-                        Sign in with Google
-                    </a>
+<div class="container">
+    <div class="content-area">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="mb-5">
+                    <h2 style="color: var(--buffer-text-primary); font-weight: 700; margin-bottom: 1.5rem;">Get started now</h2>
+                    <p style="color: var(--buffer-text-secondary); font-size: 1.125rem; margin-bottom: 2rem;">
+                        Connect your YouTube account to start uploading and scheduling videos with our powerful, easy-to-use platform.
+                    </p>
+                    
+                    <div class="d-flex justify-content-start">
+                        <a href="/login" class="btn-buffer">
+                            <i class="fab fa-google"></i>
+                            Sign in with Google
+                        </a>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <small style="color: var(--buffer-text-muted);">
+                            ✓ Free to use &nbsp;&nbsp; ✓ Secure authentication &nbsp;&nbsp; ✓ No credit card required
+                        </small>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-upload feature-icon"></i>
+                            <h4>Easy Upload</h4>
+                            <p>Upload videos directly to your YouTube channel with custom titles, descriptions, and tags.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="col-lg-6">
-            <div class="feature-card">
-                <div class="text-center">
-                    <i class="fas fa-upload feature-icon"></i>
-                    <h4>Easy Upload</h4>
-                    <p class="text-muted">Upload videos directly to your YouTube channel with custom titles, descriptions, and tags.</p>
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <i class="fas fa-calendar-alt feature-icon"></i>
+                    <h5>Smart Scheduling</h5>
+                    <p>Schedule your videos to be published at the perfect time for maximum audience engagement.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <i class="fas fa-shield-alt feature-icon"></i>
+                    <h5>Secure & Private</h5>
+                    <p>Your videos and data are secure. We only access what's necessary for uploads using Google's secure OAuth.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <i class="fas fa-zap feature-icon"></i>
+                    <h5>Lightning Fast</h5>
+                    <p>Quick uploads with real-time progress tracking and our reliable, optimized upload system.</p>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="feature-card text-center">
-                <i class="fas fa-calendar-alt feature-icon"></i>
-                <h5>Schedule Posts</h5>
-                <p class="text-muted">Schedule your videos to be published at the perfect time for your audience.</p>
-            </div>
-        </div>
         
-        <div class="col-md-4">
-            <div class="feature-card text-center">
-                <i class="fas fa-shield-alt feature-icon"></i>
-                <h5>Secure & Private</h5>
-                <p class="text-muted">Your videos and data are secure. We only access what's necessary for uploads.</p>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="feature-card text-center">
-                <i class="fas fa-lightning-bolt feature-icon"></i>
-                <h5>Fast & Reliable</h5>
-                <p class="text-muted">Quick uploads with progress tracking and reliable scheduling system.</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="alert alert-info">
-                <h5><i class="fas fa-info-circle me-2"></i>Getting Started</h5>
-                <ol class="mb-0">
-                    <li>Click "Sign in with Google" to authenticate with your YouTube account</li>
-                    <li>Grant necessary permissions for video uploads</li>
-                    <li>Upload your video and add details like title, description, and tags</li>
-                    <li>Choose to publish immediately or schedule for later</li>
-                </ol>
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-lightbulb me-3 mt-1" style="color: var(--buffer-primary);"></i>
+                        <div>
+                            <h6 class="mb-3" style="color: var(--buffer-text-primary); font-weight: 600;">How it works</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ol class="mb-0" style="color: var(--buffer-text-secondary);">
+                                        <li class="mb-2">Sign in with your Google account</li>
+                                        <li class="mb-2">Grant YouTube upload permissions</li>
+                                    </ol>
+                                </div>
+                                <div class="col-md-6">
+                                    <ol start="3" class="mb-0" style="color: var(--buffer-text-secondary);">
+                                        <li class="mb-2">Upload videos with custom metadata</li>
+                                        <li class="mb-2">Publish immediately or schedule for later</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
