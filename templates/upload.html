@@ -1,15 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="header">
-    <h1><i class="fas fa-cloud-upload-alt"></i> Upload Video</h1>
-    <p>Upload and schedule your YouTube videos</p>
-    <div class="text-end">
-        <a href="/logout" class="btn btn-outline-light btn-sm">
-            <i class="fas fa-sign-out-alt me-1"></i>Logout
-        </a>
-    </div>
-</div>
+<div id="mainContent">
+    <div class="container">
+        <div class="upload-header mb-4">
+            <h2><i class="fas fa-cloud-upload-alt me-2"></i>Upload Video</h2>
+            <p style="color: var(--buffer-text-secondary);">Upload and schedule your YouTube videos</p>
+        </div>
 
 <div class="content-area">
     <div class="row">
@@ -143,12 +140,22 @@
             </div>
         </div>
     </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Show navigation for logged in users
+    showNavbar();
+    
+    // Set active nav link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.onclick && link.onclick.toString().includes('upload')) {
+            link.classList.add('active');
+        }
+    });
     const form = document.getElementById('uploadForm');
     const titleInput = document.getElementById('title');
     const descInput = document.getElementById('description');

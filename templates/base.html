@@ -345,15 +345,742 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--buffer-text-secondary);
         }
+        
+        /* Navigation Styles */
+        .navbar {
+            background: var(--buffer-bg-primary);
+            border-bottom: 1px solid var(--buffer-border);
+            padding: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 60px;
+        }
+        
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.125rem;
+            color: var(--buffer-text-primary);
+        }
+        
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--buffer-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--buffer-primary);
+            background: var(--buffer-bg-light);
+            text-decoration: none;
+        }
+        
+        .nav-link.active {
+            color: var(--buffer-primary);
+            background: var(--buffer-bg-light);
+        }
+        
+        .navbar-user {
+            position: relative;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .user-profile:hover {
+            background: var(--buffer-bg-light);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--buffer-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+        }
+        
+        .user-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--buffer-bg-primary);
+            border: 1px solid var(--buffer-border);
+            border-radius: 8px;
+            box-shadow: var(--buffer-shadow-lg);
+            min-width: 150px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .user-menu.show {
+            display: block;
+        }
+        
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--buffer-text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .user-menu-item:hover {
+            background: var(--buffer-bg-light);
+            color: var(--buffer-text-primary);
+            text-decoration: none;
+        }
+        
+        .main-content {
+            margin-top: 60px;
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            border: 1px solid var(--buffer-border);
+            border-radius: 12px;
+            box-shadow: var(--buffer-shadow-lg);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid var(--buffer-border);
+            padding: 1.5rem;
+        }
+        
+        .modal-title {
+            color: var(--buffer-text-primary);
+            font-weight: 600;
+        }
+        
+        .social-channels {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .channel-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--buffer-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 80px;
+            position: relative;
+        }
+        
+        .channel-item.active {
+            border-color: var(--buffer-primary);
+            background: rgba(22, 142, 234, 0.05);
+        }
+        
+        .channel-item.coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .channel-item i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .channel-item span {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .channel-item small {
+            position: absolute;
+            bottom: -1.5rem;
+            font-size: 0.75rem;
+            color: var(--buffer-text-muted);
+        }
+        
+        .upload-placeholder {
+            border: 2px dashed var(--buffer-border);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .upload-placeholder:hover {
+            border-color: var(--buffer-primary);
+            background: rgba(22, 142, 234, 0.05);
+        }
+        
+        .upload-placeholder i {
+            font-size: 2rem;
+            color: var(--buffer-text-muted);
+            margin-bottom: 0.5rem;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid var(--buffer-border);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .schedule-options label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--buffer-text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Publish Section Styles */
+        .publish-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .publish-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .publish-tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid var(--buffer-border);
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 0;
+            color: var(--buffer-text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-btn.active {
+            color: var(--buffer-primary);
+            border-bottom-color: var(--buffer-primary);
+        }
+        
+        .tab-btn .badge {
+            background: var(--buffer-bg-light);
+            color: var(--buffer-text-muted);
+            border-radius: 12px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--buffer-bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .empty-icon i {
+            font-size: 2rem;
+            color: var(--buffer-primary);
+        }
+        
+        .empty-state h3 {
+            color: var(--buffer-text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: var(--buffer-text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        /* Templates Section Styles */
+        .templates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .template-categories {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .category-btn {
+            background: var(--buffer-bg-light);
+            border: 1px solid var(--buffer-border);
+            color: var(--buffer-text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn.active {
+            background: var(--buffer-primary);
+            color: white;
+            border-color: var(--buffer-primary);
+        }
+        
+        .category-btn:hover {
+            border-color: var(--buffer-primary);
+            color: var(--buffer-primary);
+        }
+        
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .template-card {
+            background: var(--buffer-bg-primary);
+            border: 1px solid var(--buffer-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--buffer-shadow-lg);
+        }
+        
+        .template-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .template-card h4 {
+            color: var(--buffer-text-primary);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+        }
+        
+        .template-card p {
+            color: var(--buffer-text-secondary);
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .template-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--buffer-success);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Responsive adjustments for new components */
+        @media (max-width: 768px) {
+            .navbar-nav {
+                gap: 1rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem;
+            }
+            
+            .nav-link span {
+                display: none;
+            }
+            
+            .publish-header,
+            .templates-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .publish-actions,
+            .templates-actions {
+                justify-content: center;
+            }
+            
+            .templates-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-channels {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Navigation Header -->
+    <nav class="navbar" id="mainNavbar" style="display: none;">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <i class="fab fa-youtube" style="color: var(--buffer-primary); margin-right: 0.5rem;"></i>
+                <span>YouTube Uploader</span>
+            </div>
+            
+            <div class="navbar-nav">
+                <a href="#" class="nav-link" onclick="showSection('upload')">
+                    <i class="fas fa-upload"></i> Upload
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('create')">
+                    <i class="fas fa-plus"></i> Create
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('publish')">
+                    <i class="fas fa-calendar"></i> Publish
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('templates')">
+                    <i class="fas fa-layer-group"></i> Templates
+                </a>
+            </div>
+            
+            <div class="navbar-user">
+                <div class="user-profile" onclick="toggleUserMenu()">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <i class="fas fa-chevron-down" id="userMenuIcon"></i>
+                </div>
+                <div class="user-menu" id="userMenu">
+                    <a href="/logout" class="user-menu-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
         {% block content %}{% endblock %}
     </div>
     
+    <!-- Post Creation Modal -->
+    <div class="modal fade" id="createPostModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="social-channels mb-4">
+                        <div class="channel-item active" data-platform="youtube">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </div>
+                        <div class="channel-item coming-soon" data-platform="instagram">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                            <small>Coming Soon</small>
+                        </div>
+                        <div class="channel-item coming-soon" data-platform="facebook">
+                            <i class="fab fa-facebook"></i>
+                            <span>Facebook</span>
+                            <small>Coming Soon</small>
+                        </div>
+                        <div class="channel-item coming-soon" data-platform="twitter">
+                            <i class="fab fa-twitter"></i>
+                            <span>Twitter</span>
+                            <small>Coming Soon</small>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <textarea class="form-control" placeholder="What would you like to share?" rows="4"></textarea>
+                        
+                        <div class="file-upload-area mt-3">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-image"></i>
+                                <p>Drag & drop or select a file</p>
+                                <input type="file" id="postFile" accept="video/*,image/*" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div class="post-actions mt-3">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-robot"></i> AI Assistant
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="schedule-options">
+                        <label>When to Post</label>
+                        <select class="form-select">
+                            <option>Next Available</option>
+                            <option>Schedule for later</option>
+                            <option>Save as draft</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Post Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global navigation functions
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            const icon = document.getElementById('userMenuIcon');
+            menu.classList.toggle('show');
+            icon.style.transform = menu.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+        
+        function showSection(section) {
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            event.target.closest('.nav-link').classList.add('active');
+            
+            // Handle different sections
+            switch(section) {
+                case 'upload':
+                    window.location.href = '/upload';
+                    break;
+                case 'create':
+                    showCreateModal();
+                    break;
+                case 'publish':
+                    showPublishSection();
+                    break;
+                case 'templates':
+                    showTemplatesSection();
+                    break;
+            }
+        }
+        
+        function showCreateModal() {
+            const modal = new bootstrap.Modal(document.getElementById('createPostModal'));
+            modal.show();
+        }
+        
+        function showPublishSection() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="container">
+                    <div class="publish-header mb-4">
+                        <h2>All Channels</h2>
+                        <div class="publish-actions">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-share"></i> Share Feedback
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-list"></i> List
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-calendar"></i> Calendar
+                            </button>
+                            <button class="btn btn-primary" onclick="showCreateModal()">
+                                <i class="fas fa-plus"></i> New Post
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="publish-tabs mb-4">
+                        <button class="tab-btn active">Queue <span class="badge">0</span></button>
+                        <button class="tab-btn">Drafts <span class="badge">0</span></button>
+                        <button class="tab-btn">Approvals <span class="badge">0</span></button>
+                        <button class="tab-btn">Sent <span class="badge">68</span></button>
+                    </div>
+                    
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>No posts scheduled</h3>
+                        <p>Schedule some posts and they will appear here</p>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <i class="fas fa-plus"></i> New Post
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showTemplatesSection() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="container">
+                    <div class="templates-header mb-4">
+                        <h2>Templates</h2>
+                        <div class="templates-actions">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-share"></i> Share Feedback
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="template-categories mb-4">
+                        <button class="category-btn active">All</button>
+                        <button class="category-btn">Tip</button>
+                        <button class="category-btn">Case Study</button>
+                        <button class="category-btn">Story</button>
+                        <button class="category-btn">How-to</button>
+                        <button class="category-btn">Question</button>
+                        <button class="category-btn">Opinion</button>
+                        <button class="category-btn">List</button>
+                        <button class="category-btn">Behind the scenes</button>
+                    </div>
+                    
+                    <div class="templates-grid">
+                        ${generateTemplateCards()}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateTemplateCards() {
+            const templates = [
+                {
+                    icon: '🌙',
+                    title: 'Share how you wind down at night',
+                    description: 'Show your audience how you disconnect, reflect, or prep for the next day.'
+                },
+                {
+                    icon: '☀️',
+                    title: 'Share how you optimize your morning workflow',
+                    description: 'Walk your audience through a personal morning routine or work setup that boosts productivity.'
+                },
+                {
+                    icon: '✍️',
+                    title: 'Introduce (or reintroduce) yourself',
+                    description: 'Tell your audience who you are, what you create content about, and who it\'s for.',
+                    badge: 'New'
+                },
+                {
+                    icon: '💡',
+                    title: 'One habit I swear by — and one I\'m quitting',
+                    description: 'Share a personal contrast and invite your audience to do the same.'
+                },
+                {
+                    icon: '📰',
+                    title: '5 newsletters I never miss',
+                    description: 'Curate a list of high-value newsletters for your niche — and share why they\'re worth it.'
+                },
+                {
+                    icon: '🤫',
+                    title: 'This feature is slept on',
+                    description: 'Highlight an underrated feature of your product or offer that consistently delivers results.'
+                },
+                {
+                    icon: '🔥',
+                    title: 'What\'s your unpopular opinion about [industry/topic]?',
+                    description: 'Invite bold responses and challenge the status quo.'
+                },
+                {
+                    icon: '🎯',
+                    title: 'Behind the scenes of my content creation',
+                    description: 'Show your process, tools, and workspace to build connection with your audience.'
+                }
+            ];
+            
+            return templates.map(template => `
+                <div class="template-card">
+                    <div class="template-icon">${template.icon}</div>
+                    <h4>${template.title}</h4>
+                    <p>${template.description}</p>
+                    ${template.badge ? `<span class="template-badge">${template.badge}</span>` : ''}
+                </div>
+            `).join('');
+        }
+        
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const userProfile = document.querySelector('.user-profile');
+            
+            if (userMenu && !userProfile.contains(event.target)) {
+                userMenu.classList.remove('show');
+                document.getElementById('userMenuIcon').style.transform = 'rotate(0deg)';
+            }
+        });
+        
+        // Show navbar when user is logged in
+        function showNavbar() {
+            document.getElementById('mainNavbar').style.display = 'block';
+        }
+        
+        // Initialize based on current page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show navbar if user is on upload page (logged in)
+            if (window.location.pathname === '/upload') {
+                showNavbar();
+            }
+        });
+    </script>
     
     {% block scripts %}{% endblock %}
 </body>
