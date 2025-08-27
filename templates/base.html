@@ -550,6 +550,21 @@
             background: rgba(22, 142, 234, 0.05);
         }
         
+        .selected-file {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--buffer-bg-light);
+            border: 1px solid var(--buffer-border);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+        
+        .selected-file i {
+            color: var(--buffer-primary);
+        }
+        
         .upload-placeholder i {
             font-size: 2rem;
             color: var(--buffer-text-muted);
@@ -1687,10 +1702,17 @@
                         <textarea class="form-control" placeholder="What would you like to share?" rows="4"></textarea>
                         
                         <div class="file-upload-area mt-3">
-                            <div class="upload-placeholder">
+                            <div class="upload-placeholder" id="uploadPlaceholder">
                                 <i class="fas fa-image"></i>
                                 <p>Drag & drop or select a file</p>
                                 <input type="file" id="postFile" accept="video/*,image/*" style="display: none;">
+                            </div>
+                            <div id="selectedFile" class="selected-file" style="display: none;">
+                                <i class="fas fa-file"></i>
+                                <span id="fileName"></span>
+                                <button type="button" class="btn btn-sm btn-outline-danger ms-auto" onclick="removeFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
                             </div>
                         </div>
                         
@@ -1716,7 +1738,7 @@
                             <option>Save as draft</option>
                         </select>
                     </div>
-                    <button type="button" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" onclick="handlePostSubmit()">
                         <i class="fas fa-paper-plane"></i> Post Now
                     </button>
                 </div>
@@ -1911,7 +1933,158 @@
             if (authenticatedPages.includes(window.location.pathname)) {
                 showNavbar();
             }
+            
+            // Initialize file upload functionality
+            initializeFileUpload();
         });
+        
+        function initializeFileUpload() {
+            const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+            const fileInput = document.getElementById('postFile');
+            const selectedFile = document.getElementById('selectedFile');
+            const fileName = document.getElementById('fileName');
+            
+            if (!uploadPlaceholder || !fileInput) return;
+            
+            // Click to select file
+            uploadPlaceholder.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // File input change
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    handleFileSelect(file);
+                }
+            });
+            
+            // Drag and drop functionality
+            uploadPlaceholder.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadPlaceholder.style.borderColor = 'var(--buffer-primary)';
+                uploadPlaceholder.style.background = 'rgba(22, 142, 234, 0.05)';
+            });
+            
+            uploadPlaceholder.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadPlaceholder.style.borderColor = 'var(--buffer-border)';
+                uploadPlaceholder.style.background = 'transparent';
+            });
+            
+            uploadPlaceholder.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadPlaceholder.style.borderColor = 'var(--buffer-border)';
+                uploadPlaceholder.style.background = 'transparent';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('video/') || file.type.startsWith('image/')) {
+                        fileInput.files = files;
+                        handleFileSelect(file);
+                    } else {
+                        alert('Please select a video or image file.');
+                    }
+                }
+            });
+            
+            function handleFileSelect(file) {
+                // Validate file type
+                if (!file.type.startsWith('video/') && !file.type.startsWith('image/')) {
+                    alert('Please select a video or image file.');
+                    return;
+                }
+                
+                // Validate file size (50MB limit for demo)
+                const maxSize = 50 * 1024 * 1024; // 50MB
+                if (file.size > maxSize) {
+                    alert('File size must be less than 50MB.');
+                    return;
+                }
+                
+                // Show selected file
+                fileName.textContent = file.name;
+                uploadPlaceholder.style.display = 'none';
+                selectedFile.style.display = 'flex';
+                
+                // Update placeholder icon based on file type
+                const fileIcon = selectedFile.querySelector('i');
+                if (file.type.startsWith('video/')) {
+                    fileIcon.className = 'fas fa-video';
+                } else if (file.type.startsWith('image/')) {
+                    fileIcon.className = 'fas fa-image';
+                }
+            }
+        }
+        
+        function removeFile() {
+            const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+            const fileInput = document.getElementById('postFile');
+            const selectedFile = document.getElementById('selectedFile');
+            
+            if (uploadPlaceholder && fileInput && selectedFile) {
+                fileInput.value = '';
+                uploadPlaceholder.style.display = 'block';
+                selectedFile.style.display = 'none';
+            }
+        }
+        
+        function handlePostSubmit() {
+            const fileInput = document.getElementById('postFile');
+            const content = document.querySelector('#createPostModal textarea').value;
+            const scheduleSelect = document.querySelector('#createPostModal select');
+            
+            if (!fileInput.files[0]) {
+                alert('Please select a file to upload.');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('video_file', file);
+            formData.append('title', content || file.name);
+            formData.append('description', content || '');
+            formData.append('privacy_status', 'private');
+            
+            if (scheduleSelect.value === 'Schedule for later') {
+                // For demo purposes, schedule for 1 hour later
+                const scheduleTime = new Date();
+                scheduleTime.setHours(scheduleTime.getHours() + 1);
+                formData.append('schedule_time', scheduleTime.toISOString());
+            }
+            
+            // Show loading state
+            const submitBtn = document.querySelector('#createPostModal .btn-primary');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            submitBtn.disabled = true;
+            
+            // Send to upload endpoint
+            fetch('/upload_video', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Upload failed: ' + data.error);
+                } else {
+                    alert('Upload successful! ' + data.message);
+                    // Close modal and reset
+                    bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
+                    removeFile();
+                    document.querySelector('#createPostModal textarea').value = '';
+                }
+            })
+            .catch(error => {
+                alert('Upload failed: ' + error.message);
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        }
     </script>
     
     {% block scripts %}{% endblock %}
