@@ -28,10 +28,19 @@ scheduled_uploads = []
 
 def create_flow():
     """Create OAuth2 flow"""
+    # Auto-detect the correct redirect URI based on environment
+    if os.environ.get('RENDER_EXTERNAL_URL'):
+        # We're on Render
+        base_url = os.environ.get('RENDER_EXTERNAL_URL')
+        redirect_uri = f"{base_url}/callback"
+    else:
+        # Local development
+        redirect_uri = os.environ.get('REDIRECT_URI', 'http://localhost:5000/callback')
+    
     flow = Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE,
         scopes=SCOPES,
-        redirect_uri=os.environ.get('REDIRECT_URI', 'http://localhost:5000/callback')
+        redirect_uri=redirect_uri
     )
     return flow
 
