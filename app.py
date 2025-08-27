@@ -56,6 +56,20 @@ def create_flow():
 def favicon():
     return '', 204
 
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring"""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'environment': {
+            'render_external_url': os.environ.get('RENDER_EXTERNAL_URL'),
+            'redirect_uri': os.environ.get('REDIRECT_URI'),
+            'flask_env': os.environ.get('FLASK_ENV'),
+            'schedule_available': SCHEDULE_AVAILABLE
+        }
+    })
+
 @app.route('/')
 def index():
     """Main page"""
