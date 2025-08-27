@@ -329,6 +329,27 @@ def get_scheduled_uploads():
     
     return jsonify({'scheduled_uploads': uploads})
 
+@app.route('/publish')
+def publish():
+    """Publish page - main dashboard"""
+    if 'credentials' not in session:
+        return redirect(url_for('login'))
+    return render_template('publish.html')
+
+@app.route('/templates')
+def templates():
+    """Templates page"""
+    if 'credentials' not in session:
+        return redirect(url_for('login'))
+    return render_template('templates.html')
+
+@app.route('/create')
+def create():
+    """Create page"""
+    if 'credentials' not in session:
+        return redirect(url_for('login'))
+    return render_template('create.html')
+
 @app.route('/logout')
 def logout():
     """Logout user"""
