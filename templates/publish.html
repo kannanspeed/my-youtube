@@ -84,12 +84,16 @@
             </div>
             
             <div class="tab-pane" id="sent-tab">
-                <div class="empty-state text-center py-5">
-                    <div class="empty-icon mb-3">
-                            <i class="fas fa-paper-plane"></i>
-                        </div>
-                    <h3 class="mb-3">Sent posts</h3>
-                    <p class="text-muted mb-4">Your published posts (68 total)</p>
+                <div class="upload-history">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Upload History</h4>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="clearHistory()">
+                            <i class="fas fa-trash"></i> Clear History
+                        </button>
+                    </div>
+                    <div id="historyContainer">
+                        <!-- History will be loaded here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -113,6 +117,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize tab functionality
     initializeTabs();
+    
+    // Load upload history
+    loadUploadHistoryDisplay();
 });
 
 function initializeTabs() {
@@ -130,8 +137,98 @@ function initializeTabs() {
             // Update active tab pane
             tabPanes.forEach(pane => pane.classList.remove('active'));
             document.getElementById(tabId + '-tab').classList.add('active');
+            
+            // Load history when sent tab is clicked
+            if (tabId === 'sent') {
+                loadUploadHistoryDisplay();
+            }
         });
     });
+}
+
+function loadUploadHistoryDisplay() {
+    const history = JSON.parse(localStorage.getItem('uploadHistory') || '[]');
+    const container = document.getElementById('historyContainer');
+    
+    if (!container) return;
+    
+    if (history.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state text-center py-5">
+                <div class="empty-icon mb-3">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h5 class="mb-3">No upload history</h5>
+                <p class="text-muted">Your uploaded videos will appear here</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = history.map(item => createHistoryItem(item)).join('');
+}
+
+function createHistoryItem(item) {
+    const date = new Date(item.timestamp).toLocaleDateString();
+    const time = new Date(item.timestamp).toLocaleTimeString();
+    
+    let statusBadge = '';
+    let statusIcon = '';
+    let actionButtons = '';
+    
+    switch(item.status) {
+        case 'uploaded':
+            statusBadge = '<span class="badge bg-success">Uploaded</span>';
+            statusIcon = '<i class="fas fa-check-circle text-success"></i>';
+            if (item.videoUrl) {
+                actionButtons = `<a href="${item.videoUrl}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="fab fa-youtube"></i> View on YouTube
+                </a>`;
+            }
+            break;
+        case 'scheduled':
+            statusBadge = '<span class="badge bg-warning">Scheduled</span>';
+            statusIcon = '<i class="fas fa-clock text-warning"></i>';
+            break;
+        case 'failed':
+            statusBadge = '<span class="badge bg-danger">Failed</span>';
+            statusIcon = '<i class="fas fa-exclamation-circle text-danger"></i>';
+            break;
+        default:
+            statusBadge = '<span class="badge bg-secondary">Unknown</span>';
+            statusIcon = '<i class="fas fa-question-circle text-secondary"></i>';
+    }
+    
+    return `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-1">
+                        ${statusIcon}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-1">${item.title}</h6>
+                        <small class="text-muted">${date} at ${time}</small>
+                        ${item.error ? `<div class="text-danger small mt-1">Error: ${item.error}</div>` : ''}
+                    </div>
+                    <div class="col-md-3">
+                        ${statusBadge}
+                        ${item.videoId ? `<div class="small text-muted mt-1">ID: ${item.videoId}</div>` : ''}
+                    </div>
+                    <div class="col-md-2 text-end">
+                        ${actionButtons}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function clearHistory() {
+    if (confirm('Are you sure you want to clear all upload history? This action cannot be undone.')) {
+        localStorage.removeItem('uploadHistory');
+        loadUploadHistoryDisplay();
+    }
 }
 </script>
 {% endblock %}
