@@ -1,0 +1,560 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="mainContent">
+    <div class="container">
+        <div class="publish-header mb-4">
+            <h2>All Channels</h2>
+            <div class="publish-actions">
+                <button class="btn btn-outline-primary">
+                    <i class="fas fa-share"></i> Share Feedback
+                </button>
+                <button class="btn btn-outline-primary">
+                    <i class="fas fa-list"></i> List
+                </button>
+                <button class="btn btn-outline-primary">
+                    <i class="fas fa-calendar"></i> Calendar
+                </button>
+                <button class="btn btn-primary" onclick="openUploadModal()">
+                    <i class="fas fa-plus"></i> New Post
+                </button>
+            </div>
+        </div>
+        
+        <div class="publish-tabs mb-4">
+            <button class="tab-btn active" onclick="showTab('queue')">Queue <span class="badge">0</span></button>
+            <button class="tab-btn" onclick="showTab('drafts')">Drafts <span class="badge">0</span></button>
+            <button class="tab-btn" onclick="showTab('approvals')">Approvals <span class="badge">0</span></button>
+            <button class="tab-btn" onclick="showTab('sent')">Sent <span class="badge" id="sentCount">0</span></button>
+        </div>
+        
+        <div class="tab-content">
+            <div id="queue-tab" class="tab-pane active">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>No posts scheduled</h3>
+                    <p>Schedule some posts and they will appear here</p>
+                    <button class="btn btn-primary" onclick="openUploadModal()">
+                        <i class="fas fa-plus"></i> New Post
+                    </button>
+                </div>
+            </div>
+            
+            <div id="drafts-tab" class="tab-pane">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>No drafts</h3>
+                    <p>Save drafts and they will appear here</p>
+                </div>
+            </div>
+            
+            <div id="approvals-tab" class="tab-pane">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>No posts awaiting approval</h3>
+                    <p>Posts requiring approval will appear here</p>
+                </div>
+            </div>
+            
+            <div id="sent-tab" class="tab-pane">
+                <div id="uploadHistory">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <h3>No uploads yet</h3>
+                        <p>Your upload history will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fab fa-youtube me-2" style="color: var(--buffer-primary);"></i>
+                    Create YouTube Post
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Social Channels -->
+                    <div class="col-12 mb-4">
+                        <div class="social-channels">
+                            <div class="channel-item active" data-platform="youtube">
+                                <i class="fab fa-youtube"></i>
+                                <span>YouTube</span>
+                            </div>
+                            <div class="channel-item coming-soon" data-platform="instagram">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                                <small>Coming Soon</small>
+                            </div>
+                            <div class="channel-item coming-soon" data-platform="facebook">
+                                <i class="fab fa-facebook"></i>
+                                <span>Facebook</span>
+                                <small>Coming Soon</small>
+                            </div>
+                            <div class="channel-item coming-soon" data-platform="twitter">
+                                <i class="fab fa-twitter"></i>
+                                <span>Twitter</span>
+                                <small>Coming Soon</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Form -->
+                    <div class="col-lg-8">
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <!-- Video File Upload -->
+                            <div class="mb-3">
+                                <label for="videoFile" class="form-label">
+                                    <i class="fas fa-file-video me-2"></i>Select Video File *
+                                </label>
+                                <div class="file-upload-area">
+                                    <div class="upload-placeholder" onclick="document.getElementById('videoFile').click()">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Drag & drop your video or click to browse</p>
+                                        <small>Supported formats: MP4, MOV, AVI, WMV (Max: 128GB)</small>
+                                    </div>
+                                    <input type="file" id="videoFile" name="video_file" accept="video/*" style="display: none;" required>
+                                </div>
+                                <div id="selectedFile" class="selected-file" style="display: none;">
+                                    <i class="fas fa-file-video"></i>
+                                    <span id="fileName"></span>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearFile()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Video Title -->
+                            <div class="mb-3">
+                                <label for="title" class="form-label">
+                                    <i class="fas fa-heading me-2"></i>Video Title *
+                                </label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       maxlength="100" required placeholder="Enter an engaging video title">
+                                <div class="form-text">
+                                    <span id="titleCount">0</span>/100 characters
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-align-left me-2"></i>Description
+                                </label>
+                                <textarea class="form-control" id="description" name="description" 
+                                          rows="4" maxlength="5000" 
+                                          placeholder="Describe your video content..."></textarea>
+                                <div class="form-text">
+                                    <span id="descCount">0</span>/5000 characters
+                                </div>
+                            </div>
+                            
+                            <!-- Tags -->
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">
+                                    <i class="fas fa-tags me-2"></i>Tags
+                                </label>
+                                <input type="text" class="form-control" id="tags" name="tags" 
+                                       placeholder="gaming, tutorial, review">
+                                <div class="form-text">Separate tags with commas</div>
+                            </div>
+                            
+                            <!-- Privacy & Schedule -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="privacyStatus" class="form-label">
+                                            <i class="fas fa-eye me-2"></i>Privacy Status
+                                        </label>
+                                        <select class="form-select" id="privacyStatus" name="privacy_status">
+                                            <option value="private">Private</option>
+                                            <option value="unlisted">Unlisted</option>
+                                            <option value="public">Public</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="scheduleTime" class="form-label">
+                                            <i class="fas fa-clock me-2"></i>Schedule (Optional)
+                                        </label>
+                                        <input type="datetime-local" class="form-control" 
+                                               id="scheduleTime" name="schedule_time">
+                                        <div class="form-text">Leave empty to upload immediately</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div id="progressContainer" class="mb-3" style="display: none;">
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <small id="progressText">Uploading...</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Alert Messages -->
+                            <div id="alertContainer"></div>
+                        </form>
+                    </div>
+                    
+                    <!-- Sidebar -->
+                    <div class="col-lg-4">
+                        <div class="upload-sidebar">
+                            <!-- Tips -->
+                            <div class="sidebar-section">
+                                <h6><i class="fas fa-lightbulb me-2 text-warning"></i>Tips for Success</h6>
+                                <ul class="tips-list">
+                                    <li>Use engaging titles with relevant keywords</li>
+                                    <li>Add detailed descriptions for better SEO</li>
+                                    <li>Include relevant tags to help discovery</li>
+                                    <li>Schedule uploads for optimal viewing times</li>
+                                    <li>Start with 'Private' and change later if needed</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Scheduled Uploads -->
+                            <div class="sidebar-section">
+                                <h6><i class="fas fa-calendar-check me-2 text-success"></i>Scheduled Uploads</h6>
+                                <div id="scheduledList">
+                                    <p class="text-muted">No scheduled uploads</p>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm w-100" onclick="loadScheduledUploads()">
+                                    <i class="fas fa-refresh me-1"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="upload-actions">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveDraft()">
+                        <i class="fas fa-save me-1"></i>Save Draft
+                    </button>
+                    <button type="submit" form="uploadForm" class="btn btn-primary" id="uploadBtn">
+                        <i class="fas fa-upload me-1"></i>
+                        <span id="submitText">Upload Video</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show navigation for logged in users
+    showNavbar();
+    
+    // Set active nav link for Publish
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.textContent.trim().includes('Publish')) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Load upload history
+    loadUploadHistory();
+    loadScheduledUploads();
+    
+    // Initialize upload form
+    initializeUploadForm();
+});
+
+function showTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.getElementById(tabName + '-tab').classList.add('active');
+}
+
+function openUploadModal() {
+    const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
+    modal.show();
+}
+
+function initializeUploadForm() {
+    const form = document.getElementById('uploadForm');
+    const videoFile = document.getElementById('videoFile');
+    const titleInput = document.getElementById('title');
+    const descInput = document.getElementById('description');
+    const titleCount = document.getElementById('titleCount');
+    const descCount = document.getElementById('descCount');
+    const scheduleTime = document.getElementById('scheduleTime');
+    const submitText = document.getElementById('submitText');
+    
+    // File selection handler
+    videoFile.addEventListener('change', function() {
+        if (this.files[0]) {
+            document.getElementById('fileName').textContent = this.files[0].name;
+            document.querySelector('.upload-placeholder').style.display = 'none';
+            document.getElementById('selectedFile').style.display = 'flex';
+        }
+    });
+    
+    // Character counters
+    titleInput.addEventListener('input', function() {
+        titleCount.textContent = this.value.length;
+    });
+    
+    descInput.addEventListener('input', function() {
+        descCount.textContent = this.value.length;
+    });
+    
+    // Set minimum datetime to current time
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    scheduleTime.min = now.toISOString().slice(0, 16);
+    
+    // Update submit button text based on schedule
+    scheduleTime.addEventListener('change', function() {
+        if (this.value) {
+            submitText.textContent = 'Schedule Video';
+        } else {
+            submitText.textContent = 'Upload Video';
+        }
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        uploadVideo();
+    });
+}
+
+function clearFile() {
+    document.getElementById('videoFile').value = '';
+    document.querySelector('.upload-placeholder').style.display = 'block';
+    document.getElementById('selectedFile').style.display = 'none';
+}
+
+function uploadVideo() {
+    const form = document.getElementById('uploadForm');
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('uploadBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressText = document.getElementById('progressText');
+    const alertContainer = document.getElementById('alertContainer');
+    
+    // Validate file
+    const videoFile = document.getElementById('videoFile').files[0];
+    if (!videoFile) {
+        showAlert('Please select a video file', 'danger');
+        return;
+    }
+    
+    // Disable form and show progress
+    submitBtn.disabled = true;
+    progressContainer.style.display = 'block';
+    
+    // Create XMLHttpRequest for progress tracking
+    const xhr = new XMLHttpRequest();
+    
+    xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable) {
+            const percentComplete = (e.loaded / e.total) * 100;
+            progressBar.style.width = percentComplete + '%';
+            progressText.textContent = `Uploading... ${Math.round(percentComplete)}%`;
+        }
+    });
+    
+    xhr.addEventListener('load', function() {
+        if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.scheduled) {
+                showAlert(response.message, 'success');
+                loadScheduledUploads();
+            } else {
+                showAlert(`${response.message}<br><a href="${response.video_url}" target="_blank">View on YouTube</a>`, 'success');
+                // Add to upload history
+                addToUploadHistory({
+                    title: form.title.value,
+                    status: 'success',
+                    video_url: response.video_url,
+                    timestamp: new Date()
+                });
+            }
+            form.reset();
+            clearFile();
+            document.getElementById('titleCount').textContent = '0';
+            document.getElementById('descCount').textContent = '0';
+            document.getElementById('submitText').textContent = 'Upload Video';
+            
+            // Close modal after success
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+            }, 2000);
+        } else {
+            try {
+                const error = JSON.parse(xhr.responseText);
+                const errorMessage = error.error || 'Upload failed';
+                showAlert(`<strong>Upload Error (${xhr.status}):</strong><br>${errorMessage}`, 'danger');
+                // Add to upload history
+                addToUploadHistory({
+                    title: form.title.value || 'Untitled',
+                    status: 'failed',
+                    error: errorMessage,
+                    timestamp: new Date()
+                });
+            } catch (parseError) {
+                showAlert(`<strong>Upload Error (${xhr.status}):</strong><br>Failed to parse error response`, 'danger');
+            }
+        }
+        
+        // Reset form state
+        submitBtn.disabled = false;
+        progressContainer.style.display = 'none';
+        progressBar.style.width = '0%';
+    });
+    
+    xhr.addEventListener('error', function() {
+        showAlert('<strong>Network Error:</strong><br>Failed to connect to server. Please check your internet connection and try again.', 'danger');
+        submitBtn.disabled = false;
+        progressContainer.style.display = 'none';
+        progressBar.style.width = '0%';
+        
+        // Add to upload history
+        addToUploadHistory({
+            title: form.title.value || 'Untitled',
+            status: 'failed',
+            error: 'Network error',
+            timestamp: new Date()
+        });
+    });
+    
+    xhr.open('POST', '/upload_video');
+    xhr.send(formData);
+}
+
+function showAlert(message, type) {
+    const alertContainer = document.getElementById('alertContainer');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    alertContainer.innerHTML = '';
+    alertContainer.appendChild(alert);
+    
+    // Auto-dismiss success alerts after 5 seconds
+    if (type === 'success') {
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+}
+
+function addToUploadHistory(upload) {
+    let history = JSON.parse(localStorage.getItem('uploadHistory') || '[]');
+    history.unshift(upload);
+    // Keep only last 50 uploads
+    history = history.slice(0, 50);
+    localStorage.setItem('uploadHistory', JSON.stringify(history));
+    loadUploadHistory();
+}
+
+function loadUploadHistory() {
+    const history = JSON.parse(localStorage.getItem('uploadHistory') || '[]');
+    const historyContainer = document.getElementById('uploadHistory');
+    const sentCount = document.getElementById('sentCount');
+    
+    sentCount.textContent = history.length;
+    
+    if (history.length === 0) {
+        historyContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h3>No uploads yet</h3>
+                <p>Your upload history will appear here</p>
+            </div>
+        `;
+        return;
+    }
+    
+    historyContainer.innerHTML = `
+        <div class="upload-history">
+            ${history.map(upload => `
+                <div class="history-item ${upload.status}">
+                    <div class="history-icon">
+                        <i class="fas ${upload.status === 'success' ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'}"></i>
+                    </div>
+                    <div class="history-content">
+                        <h6>${upload.title}</h6>
+                        <p class="text-muted">${new Date(upload.timestamp).toLocaleString()}</p>
+                        ${upload.status === 'success' && upload.video_url ? 
+                            `<a href="${upload.video_url}" target="_blank" class="btn btn-sm btn-outline-primary">View on YouTube</a>` :
+                            upload.error ? `<small class="text-danger">${upload.error}</small>` : ''
+                        }
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function loadScheduledUploads() {
+    fetch('/scheduled_uploads')
+        .then(response => response.json())
+        .then(data => {
+            const scheduledList = document.getElementById('scheduledList');
+            
+            if (data.scheduled_uploads && data.scheduled_uploads.length > 0) {
+                scheduledList.innerHTML = data.scheduled_uploads.map(upload => `
+                    <div class="scheduled-item">
+                        <h6 class="mb-1">${upload.title}</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            ${new Date(upload.schedule_time).toLocaleString()}
+                        </small>
+                    </div>
+                `).join('');
+            } else {
+                scheduledList.innerHTML = '<p class="text-muted">No scheduled uploads</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading scheduled uploads:', error);
+        });
+}
+
+function saveDraft() {
+    // TODO: Implement draft saving functionality
+    showAlert('Draft saved successfully!', 'success');
+}
+</script>
+{% endblock %}

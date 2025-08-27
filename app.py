@@ -134,10 +134,17 @@ def callback():
             session['no_channel_error'] = True
             return redirect(url_for('index'))
         
-        return redirect(url_for('upload_page'))
+        return redirect(url_for('publish_page'))
     except Exception as e:
         logger.error(f"Callback failed: {str(e)}")
         return jsonify({'error': f'Callback failed: {str(e)}'}), 500
+
+@app.route('/publish')
+def publish_page():
+    """Main publish page - only accessible after authentication"""
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+    return render_template('publish.html')
 
 @app.route('/upload')
 def upload_page():

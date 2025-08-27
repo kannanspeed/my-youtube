@@ -738,6 +738,168 @@
             font-weight: 600;
         }
         
+        /* Publish Page Specific Styles */
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        .upload-sidebar {
+            background: var(--buffer-bg-primary);
+            border: 1px solid var(--buffer-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .sidebar-section h6 {
+            color: var(--buffer-text-primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .tips-list li {
+            color: var(--buffer-text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+        
+        .tips-list li:before {
+            content: "•";
+            color: var(--buffer-primary);
+            position: absolute;
+            left: 0;
+        }
+        
+        .selected-file {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--buffer-bg-light);
+            border: 1px solid var(--buffer-border);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+        
+        .selected-file i {
+            color: var(--buffer-primary);
+        }
+        
+        .upload-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .scheduled-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--buffer-border);
+        }
+        
+        .scheduled-item:last-child {
+            border-bottom: none;
+        }
+        
+        .scheduled-item h6 {
+            color: var(--buffer-text-primary);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+        
+        .upload-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--buffer-border);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            background: var(--buffer-bg-primary);
+        }
+        
+        .history-item.success {
+            border-left: 4px solid var(--buffer-success);
+        }
+        
+        .history-item.failed {
+            border-left: 4px solid var(--buffer-danger);
+        }
+        
+        .history-icon {
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+        
+        .history-content {
+            flex: 1;
+        }
+        
+        .history-content h6 {
+            color: var(--buffer-text-primary);
+            font-size: 0.9375rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .history-content p {
+            margin-bottom: 0.5rem;
+            font-size: 0.8125rem;
+        }
+        
+        /* Enhanced Modal Styles */
+        .modal-xl {
+            max-width: 1200px;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .upload-placeholder {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        
+        .upload-placeholder i {
+            font-size: 3rem;
+            color: var(--buffer-text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .upload-placeholder p {
+            font-size: 1.125rem;
+            color: var(--buffer-text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-placeholder small {
+            color: var(--buffer-text-muted);
+        }
+        
         /* Responsive adjustments for new components */
         @media (max-width: 768px) {
             .navbar-nav {
@@ -784,13 +946,13 @@
             </div>
             
             <div class="navbar-nav">
-                <a href="#" class="nav-link" onclick="showSection('upload')">
+                <a href="/upload" class="nav-link">
                     <i class="fas fa-upload"></i> Upload
                 </a>
-                <a href="#" class="nav-link" onclick="showSection('create')">
+                <a href="#" class="nav-link" onclick="showCreateModal()">
                     <i class="fas fa-plus"></i> Create
                 </a>
-                <a href="#" class="nav-link" onclick="showSection('publish')">
+                <a href="/publish" class="nav-link">
                     <i class="fas fa-calendar"></i> Publish
                 </a>
                 <a href="#" class="nav-link" onclick="showSection('templates')">
@@ -1075,8 +1237,8 @@
         
         // Initialize based on current page
         document.addEventListener('DOMContentLoaded', function() {
-            // Show navbar if user is on upload page (logged in)
-            if (window.location.pathname === '/upload') {
+            // Show navbar if user is on upload or publish page (logged in)
+            if (window.location.pathname === '/upload' || window.location.pathname === '/publish') {
                 showNavbar();
             }
         });
