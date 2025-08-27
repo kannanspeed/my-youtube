@@ -6,7 +6,12 @@ from googleapiclient.http import MediaFileUpload
 import os
 import json
 import tempfile
+import logging
 from datetime import datetime, timedelta
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 try:
     import schedule
     SCHEDULE_AVAILABLE = True
@@ -33,10 +38,13 @@ def create_flow():
         # We're on Render
         base_url = os.environ.get('RENDER_EXTERNAL_URL')
         redirect_uri = f"{base_url}/callback"
+        logger.info(f"Using Render redirect URI: {redirect_uri}")
     else:
         # Local development
         redirect_uri = os.environ.get('REDIRECT_URI', 'http://localhost:5000/callback')
+        logger.info(f"Using local redirect URI: {redirect_uri}")
     
+    logger.info(f"Creating OAuth2 flow with redirect URI: {redirect_uri}")
     flow = Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE,
         scopes=SCOPES,
@@ -57,32 +65,45 @@ def index():
 def login():
     """Initiate Google OAuth2 login"""
     try:
+        logger.info("Starting OAuth2 login process")
         flow = create_flow()
         authorization_url, state = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true'
         )
         session['state'] = state
+        logger.info(f"Generated authorization URL: {authorization_url}")
+        logger.info(f"Generated state: {state}")
         return redirect(authorization_url)
     except Exception as e:
+        logger.error(f"Login failed: {str(e)}")
         return jsonify({'error': f'Login failed: {str(e)}'}), 500
 
 @app.route('/callback')
 def callback():
     """Handle OAuth2 callback"""
     try:
-        state = session['state']
+        logger.info(f"OAuth2 callback received. URL: {request.url}")
+        logger.info(f"Request args: {dict(request.args)}")
+        
+        state = session.get('state')
+        logger.info(f"Session state: {state}")
+        logger.info(f"Request state: {request.args.get('state')}")
+        
         flow = create_flow()
         flow.fetch_token(authorization_response=request.url)
         
         if not state or state != request.args.get('state'):
+            logger.error(f"State mismatch. Session: {state}, Request: {request.args.get('state')}")
             return jsonify({'error': 'Invalid state parameter'}), 400
         
         credentials = flow.credentials
         session['credentials'] = credentials_to_dict(credentials)
+        logger.info("OAuth2 authentication successful")
         
         return redirect(url_for('upload_page'))
     except Exception as e:
+        logger.error(f"Callback failed: {str(e)}")
         return jsonify({'error': f'Callback failed: {str(e)}'}), 500
 
 @app.route('/upload')
