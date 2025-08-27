@@ -12,11 +12,11 @@
                             <i class="fas fa-lightbulb me-2"></i>Create
                         </h6>
                         <ul class="sidebar-menu">
-                            <li class="sidebar-item">
+                            <li class="sidebar-item" onclick="showSection('ideas')">
                                 <i class="fas fa-lightbulb"></i>
                                 <span>Ideas</span>
                             </li>
-                            <li class="sidebar-item active">
+                            <li class="sidebar-item active" onclick="showSection('templates')">
                                 <i class="fas fa-layer-group"></i>
                                 <span>Templates</span>
                                 <span class="badge-new">New</span>
@@ -41,7 +41,101 @@
             <!-- Main Content Area -->
             <div class="col-md-9 col-lg-10">
                 <div class="main-content-area">
-                    <!-- This will be populated based on sidebar selection -->
+                    <!-- Ideas Section -->
+                    <div id="ideas-content" style="display: none;">
+                        <div class="ideas-header mb-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h2 class="mb-0 d-flex align-items-center">
+                                        <span>Ideas</span>
+                                        <button class="btn btn-outline-primary btn-sm ms-3">
+                                            <i class="fas fa-magic me-1"></i>Generate Ideas
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="header-actions d-flex justify-content-end gap-2">
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="fas fa-share me-2"></i>Share Feedback
+                    </button>
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="fas fa-tags me-2"></i>Tags
+                    </button>
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="fas fa-th me-2"></i>Board
+                    </button>
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="fas fa-th-large me-2"></i>Gallery
+                    </button>
+                    <button class="btn btn-primary">
+                                            <i class="fas fa-plus me-2"></i>New Idea
+                    </button>
+                                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="kanban-board">
+                            <div class="kanban-column">
+                <div class="column-header">
+                                    <h5>Unassigned <span class="count">0</span></h5>
+                                    <button class="btn btn-sm btn-outline-primary add-item-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                                <div class="column-content" data-status="unassigned">
+                                    <div class="add-idea-placeholder" onclick="addNewIdea('unassigned')">
+                                        <i class="fas fa-plus me-2"></i>New Idea
+                        </div>
+                        </div>
+                    </div>
+                    
+                            <div class="kanban-column">
+                                <div class="column-header">
+                                    <h5>To Do <span class="count">0</span></h5>
+                                    <button class="btn btn-sm btn-outline-primary add-item-btn">
+                                        <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                                <div class="column-content" data-status="todo">
+                                    <div class="add-idea-placeholder" onclick="addNewIdea('todo')">
+                                        <i class="fas fa-plus me-2"></i>New Idea
+                    </div>
+                </div>
+            </div>
+
+                            <div class="kanban-column">
+                <div class="column-header">
+                                    <h5>In Progress <span class="count">0</span></h5>
+                                    <button class="btn btn-sm btn-outline-primary add-item-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                                <div class="column-content" data-status="inprogress">
+                                    <div class="add-idea-placeholder" onclick="addNewIdea('inprogress')">
+                                        <i class="fas fa-plus me-2"></i>New Idea
+                </div>
+                </div>
+            </div>
+
+                            <div class="kanban-column">
+                <div class="column-header">
+                                    <h5>Done <span class="count">0</span></h5>
+                                    <button class="btn btn-sm btn-outline-primary add-item-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                                <div class="column-content" data-status="done">
+                                    <div class="add-idea-placeholder" onclick="addNewIdea('done')">
+                                        <i class="fas fa-plus me-2"></i>New Idea
+                                    </div>
+                                </div>
+                </div>
+                </div>
+            </div>
+
+                    <!-- Templates Section -->
                     <div id="templates-content">
                         <!-- Include the templates content here -->
                         <div class="templates-header mb-5">
@@ -53,8 +147,8 @@
                                 <div class="col-md-4 text-end">
                                     <button class="btn btn-outline-primary">
                                         <i class="fas fa-share me-2"></i>Share Feedback
-                                    </button>
-                                </div>
+                    </button>
+                </div>
                             </div>
                         </div>
 
@@ -72,7 +166,7 @@
                                 <button class="category-btn" data-category="behind-scenes">Behind the scenes</button>
                                 <button class="category-btn" data-category="more">More <i class="fas fa-chevron-down ms-1"></i></button>
                             </div>
-                        </div>
+                </div>
 
                         <!-- Templates Grid -->
                         <div class="row g-4">
@@ -83,9 +177,9 @@
                                     <p>Walk your audience through the small habits or actions that help you reset and refocus halfway through the day.</p>
                                     <div class="template-actions mt-auto">
                                         <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(this)">Use Template</button>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+            </div>
+        </div>
 
                             <div class="col-lg-4 col-md-6">
                                 <div class="template-card h-100" data-category="story">
@@ -96,7 +190,7 @@
                                         <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(this)">Use Template</button>
                                     </div>
                                 </div>
-                            </div>
+            </div>
 
                             <div class="col-lg-4 col-md-6">
                                 <div class="template-card h-100" data-category="how-to">
@@ -107,7 +201,7 @@
                                         <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(this)">Use Template</button>
                                     </div>
                                 </div>
-                            </div>
+            </div>
 
                             <div class="col-lg-4 col-md-6">
                                 <div class="template-card h-100" data-category="story">
@@ -119,7 +213,7 @@
                                         <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(this)">Use Template</button>
                                     </div>
                                 </div>
-                            </div>
+            </div>
 
                             <div class="col-lg-4 col-md-6">
                                 <div class="template-card h-100" data-category="story">
@@ -130,7 +224,7 @@
                                         <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(this)">Use Template</button>
                                     </div>
                                 </div>
-                            </div>
+            </div>
 
                             <div class="col-lg-4 col-md-6">
                                 <div class="template-card h-100" data-category="list">
@@ -139,12 +233,12 @@
                                     <p>Curate a list of high-value newsletters for your niche — and share why they're worth it.</p>
                                     <div class="template-actions mt-auto">
                                         <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(this)">Use Template</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+        </div>
+    </div>
+</div>
                     </div>
-                </div>
+            </div>
             </div>
         </div>
     </div>
@@ -167,6 +261,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize category filtering
     initializeCategoryFiltering();
+    
+    // Show templates by default
+    showSection('templates');
+    
+    // Load saved ideas
+    loadIdeas();
 });
 
 function initializeCategoryFiltering() {
@@ -193,15 +293,162 @@ function initializeCategoryFiltering() {
     });
 }
 
+function showSection(section) {
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Hide all sections
+    document.getElementById('ideas-content').style.display = 'none';
+    document.getElementById('templates-content').style.display = 'none';
+    
+    // Show selected section
+    if (section === 'ideas') {
+        document.getElementById('ideas-content').style.display = 'block';
+        document.querySelector('.sidebar-item[onclick="showSection(\'ideas\')"]').classList.add('active');
+    } else {
+        document.getElementById('templates-content').style.display = 'block';
+        document.querySelector('.sidebar-item[onclick="showSection(\'templates\')"]').classList.add('active');
+    }
+}
+
+function addNewIdea(status) {
+    const title = prompt('Enter idea title:');
+    if (!title) return;
+    
+    const description = prompt('Enter idea description (optional):') || '';
+    
+    const idea = {
+        id: Date.now(),
+        title: title,
+        description: description,
+        status: status,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Save to localStorage
+    let ideas = JSON.parse(localStorage.getItem('ideas') || '[]');
+    ideas.push(idea);
+    localStorage.setItem('ideas', JSON.stringify(ideas));
+    
+    // Refresh the board
+    loadIdeas();
+}
+
+function loadIdeas() {
+    const ideas = JSON.parse(localStorage.getItem('ideas') || '[]');
+    
+    // Clear all columns
+    document.querySelectorAll('.column-content').forEach(column => {
+        const placeholder = column.querySelector('.add-idea-placeholder');
+        column.innerHTML = '';
+        column.appendChild(placeholder);
+    });
+    
+    // Group ideas by status
+    const groupedIdeas = {
+        unassigned: [],
+        todo: [],
+        inprogress: [],
+        done: []
+    };
+    
+    ideas.forEach(idea => {
+        if (groupedIdeas[idea.status]) {
+            groupedIdeas[idea.status].push(idea);
+        }
+    });
+    
+    // Add ideas to columns
+    Object.keys(groupedIdeas).forEach(status => {
+        const column = document.querySelector(`[data-status="${status}"]`);
+        const placeholder = column.querySelector('.add-idea-placeholder');
+        
+        groupedIdeas[status].forEach(idea => {
+            const ideaCard = createIdeaCard(idea);
+            column.insertBefore(ideaCard, placeholder);
+        });
+        
+        // Update count
+        const countSpan = column.parentElement.querySelector('.count');
+        countSpan.textContent = groupedIdeas[status].length;
+    });
+}
+
+function createIdeaCard(idea) {
+    const card = document.createElement('div');
+    card.className = 'idea-card';
+    card.draggable = true;
+    card.dataset.ideaId = idea.id;
+    
+    card.innerHTML = `
+        <h6>${idea.title}</h6>
+        ${idea.description ? `<p>${idea.description}</p>` : ''}
+        <div class="idea-actions">
+            <button class="btn btn-sm btn-outline-primary" onclick="editIdea(${idea.id})">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteIdea(${idea.id})">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    return card;
+}
+
+function editIdea(ideaId) {
+    const ideas = JSON.parse(localStorage.getItem('ideas') || '[]');
+    const idea = ideas.find(i => i.id === ideaId);
+    if (!idea) return;
+    
+    const newTitle = prompt('Edit title:', idea.title);
+    if (newTitle === null) return;
+    
+    const newDescription = prompt('Edit description:', idea.description || '');
+    if (newDescription === null) return;
+    
+    idea.title = newTitle;
+    idea.description = newDescription;
+    
+    localStorage.setItem('ideas', JSON.stringify(ideas));
+    loadIdeas();
+}
+
+function deleteIdea(ideaId) {
+    if (!confirm('Delete this idea?')) return;
+    
+    let ideas = JSON.parse(localStorage.getItem('ideas') || '[]');
+    ideas = ideas.filter(i => i.id !== ideaId);
+    
+    localStorage.setItem('ideas', JSON.stringify(ideas));
+    loadIdeas();
+}
+
 function useTemplate(button) {
     const card = button.closest('.template-card');
     const title = card.querySelector('h4').textContent;
     const description = card.querySelector('p').textContent;
     
-    // For now, just show an alert
-    alert('Template selected: ' + title);
+    // Add template as an idea
+    const idea = {
+        id: Date.now(),
+        title: title,
+        description: description,
+        status: 'unassigned',
+        timestamp: new Date().toISOString()
+    };
     
-    // In a real implementation, this would open a modal or redirect to create post
+    let ideas = JSON.parse(localStorage.getItem('ideas') || '[]');
+    ideas.push(idea);
+    localStorage.setItem('ideas', JSON.stringify(ideas));
+    
+    // Switch to ideas view
+    showSection('ideas');
+    loadIdeas();
+    
+    alert('Template added to Ideas!');
 }
 </script>
 {% endblock %}

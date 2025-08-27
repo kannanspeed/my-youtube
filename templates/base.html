@@ -962,6 +962,127 @@
             padding: 2rem 1rem;
         }
         
+        /* Ideas Section Styles */
+        .ideas-header h2 {
+            color: var(--buffer-text-primary);
+            font-weight: 700;
+        }
+        
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .kanban-column {
+            background: var(--buffer-bg-primary);
+            border: 1px solid var(--buffer-border);
+            border-radius: 12px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .column-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--buffer-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .column-header h5 {
+            margin: 0;
+            color: var(--buffer-text-primary);
+            font-weight: 600;
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .column-header .count {
+            background: var(--buffer-bg-light);
+            color: var(--buffer-text-muted);
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .add-item-btn {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        
+        .column-content {
+            flex: 1;
+            padding: 1rem;
+            min-height: 300px;
+        }
+        
+        .idea-card {
+            background: var(--buffer-bg-primary);
+            border: 1px solid var(--buffer-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        
+        .idea-card:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--buffer-shadow-lg);
+        }
+        
+        .idea-card h6 {
+            color: var(--buffer-text-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .idea-card p {
+            color: var(--buffer-text-secondary);
+            font-size: 0.8125rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+        
+        .idea-actions {
+            display: flex;
+            gap: 0.25rem;
+            justify-content: flex-end;
+        }
+        
+        .idea-actions .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .add-idea-placeholder {
+            padding: 1rem;
+            text-align: center;
+            color: var(--buffer-text-muted);
+            cursor: pointer;
+            border: 2px dashed var(--buffer-border);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .add-idea-placeholder:hover {
+            background: var(--buffer-bg-light);
+            color: var(--buffer-primary);
+            border-color: var(--buffer-primary);
+        }
+        
         .upload-sidebar {
             background: var(--buffer-bg-primary);
             border: 1px solid var(--buffer-border);
@@ -1467,6 +1588,25 @@
             
             .main-content-area {
                 padding: 1rem 0;
+            }
+            
+            .kanban-board {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .kanban-column {
+                min-height: 300px;
+            }
+            
+            .ideas-header .header-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .ideas-header .header-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
