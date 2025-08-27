@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1><i class="fas fa-cloud-upload-alt"></i> Upload Video</h1>
+    <p>Upload and schedule your YouTube videos</p>
+    <div class="text-end">
+        <a href="/logout" class="btn btn-outline-light btn-sm">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+        </a>
+    </div>
+</div>
+
+<div class="content-area">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">
+                        <i class="fas fa-video me-2 text-primary"></i>Video Upload Form
+                    </h4>
+                    
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="videoFile" class="form-label">
+                                <i class="fas fa-file-video me-2"></i>Select Video File *
+                            </label>
+                            <input type="file" class="form-control" id="videoFile" name="video_file" 
+                                   accept="video/*" required>
+                            <div class="form-text">Supported formats: MP4, MOV, AVI, WMV (Max: 128GB)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">
+                                <i class="fas fa-heading me-2"></i>Video Title *
+                            </label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   maxlength="100" required placeholder="Enter video title">
+                            <div class="form-text">
+                                <span id="titleCount">0</span>/100 characters
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-align-left me-2"></i>Description
+                            </label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="4" maxlength="5000" 
+                                      placeholder="Describe your video..."></textarea>
+                            <div class="form-text">
+                                <span id="descCount">0</span>/5000 characters
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">
+                                <i class="fas fa-tags me-2"></i>Tags
+                            </label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   placeholder="tag1, tag2, tag3">
+                            <div class="form-text">Separate tags with commas</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="privacyStatus" class="form-label">
+                                        <i class="fas fa-eye me-2"></i>Privacy Status
+                                    </label>
+                                    <select class="form-select" id="privacyStatus" name="privacy_status">
+                                        <option value="private">Private</option>
+                                        <option value="unlisted">Unlisted</option>
+                                        <option value="public">Public</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="scheduleTime" class="form-label">
+                                        <i class="fas fa-clock me-2"></i>Schedule (Optional)
+                                    </label>
+                                    <input type="datetime-local" class="form-control" 
+                                           id="scheduleTime" name="schedule_time">
+                                    <div class="form-text">Leave empty to upload immediately</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-upload me-2"></i>
+                                <span id="submitText">Upload Video</span>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Progress Bar -->
+                    <div id="progressContainer" class="mt-3" style="display: none;">
+                        <div class="progress progress-custom">
+                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <small id="progressText">Uploading...</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Alert Messages -->
+                    <div id="alertContainer" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-calendar-check me-2 text-success"></i>Scheduled Uploads
+                    </h5>
+                    <div id="scheduledList">
+                        <p class="text-muted">No scheduled uploads</p>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm w-100" onclick="loadScheduledUploads()">
+                        <i class="fas fa-refresh me-1"></i>Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-lightbulb me-2 text-warning"></i>Tips
+                    </h6>
+                    <ul class="small mb-0">
+                        <li>Use engaging titles with relevant keywords</li>
+                        <li>Add detailed descriptions for better SEO</li>
+                        <li>Include relevant tags to help discovery</li>
+                        <li>Schedule uploads for optimal viewing times</li>
+                        <li>Start with 'Private' and change later if needed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('uploadForm');
+    const titleInput = document.getElementById('title');
+    const descInput = document.getElementById('description');
+    const titleCount = document.getElementById('titleCount');
+    const descCount = document.getElementById('descCount');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressText = document.getElementById('progressText');
+    const alertContainer = document.getElementById('alertContainer');
+    const submitText = document.getElementById('submitText');
+    const scheduleTime = document.getElementById('scheduleTime');
+    
+    // Character counters
+    titleInput.addEventListener('input', function() {
+        titleCount.textContent = this.value.length;
+    });
+    
+    descInput.addEventListener('input', function() {
+        descCount.textContent = this.value.length;
+    });
+    
+    // Set minimum datetime to current time
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    scheduleTime.min = now.toISOString().slice(0, 16);
+    
+    // Update submit button text based on schedule
+    scheduleTime.addEventListener('change', function() {
+        if (this.value) {
+            submitText.textContent = 'Schedule Video';
+        } else {
+            submitText.textContent = 'Upload Video';
+        }
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        // Validate file
+        const videoFile = document.getElementById('videoFile').files[0];
+        if (!videoFile) {
+            showAlert('Please select a video file', 'danger');
+            return;
+        }
+        
+        // Check file size (128GB = 137438953472 bytes)
+        if (videoFile.size > 137438953472) {
+            showAlert('File size exceeds 128GB limit', 'danger');
+            return;
+        }
+        
+        // Disable form and show progress
+        submitBtn.disabled = true;
+        progressContainer.style.display = 'block';
+        
+        // Create XMLHttpRequest for progress tracking
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                progressBar.style.width = percentComplete + '%';
+                progressText.textContent = `Uploading... ${Math.round(percentComplete)}%`;
+            }
+        });
+        
+        xhr.addEventListener('load', function() {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.scheduled) {
+                    showAlert(response.message, 'success');
+                    loadScheduledUploads();
+                } else {
+                    showAlert(`${response.message}<br><a href="${response.video_url}" target="_blank">View on YouTube</a>`, 'success');
+                }
+                form.reset();
+                titleCount.textContent = '0';
+                descCount.textContent = '0';
+                submitText.textContent = 'Upload Video';
+            } else {
+                const error = JSON.parse(xhr.responseText);
+                showAlert(error.error || 'Upload failed', 'danger');
+            }
+            
+            // Reset form state
+            submitBtn.disabled = false;
+            progressContainer.style.display = 'none';
+            progressBar.style.width = '0%';
+        });
+        
+        xhr.addEventListener('error', function() {
+            showAlert('Network error occurred', 'danger');
+            submitBtn.disabled = false;
+            progressContainer.style.display = 'none';
+            progressBar.style.width = '0%';
+        });
+        
+        xhr.open('POST', '/upload_video');
+        xhr.send(formData);
+    });
+    
+    // Load scheduled uploads on page load
+    loadScheduledUploads();
+});
+
+function showAlert(message, type) {
+    const alertContainer = document.getElementById('alertContainer');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    alertContainer.innerHTML = '';
+    alertContainer.appendChild(alert);
+    
+    // Auto-dismiss success alerts after 5 seconds
+    if (type === 'success') {
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+}
+
+function loadScheduledUploads() {
+    fetch('/scheduled_uploads')
+        .then(response => response.json())
+        .then(data => {
+            const scheduledList = document.getElementById('scheduledList');
+            
+            if (data.scheduled_uploads && data.scheduled_uploads.length > 0) {
+                scheduledList.innerHTML = data.scheduled_uploads.map(upload => `
+                    <div class="border-start border-primary border-3 ps-3 mb-2">
+                        <h6 class="mb-1">${upload.title}</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            ${new Date(upload.schedule_time).toLocaleString()}
+                        </small>
+                    </div>
+                `).join('');
+            } else {
+                scheduledList.innerHTML = '<p class="text-muted">No scheduled uploads</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading scheduled uploads:', error);
+        });
+}
+</script>
+{% endblock %}
+

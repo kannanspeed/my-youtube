@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1><i class="fab fa-youtube"></i> YouTube Video Uploader</h1>
+    <p>Upload and schedule your videos with ease</p>
+</div>
+
+<div class="content-area">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="text-center mb-4">
+                <h2>Welcome!</h2>
+                <p class="text-muted">Connect your YouTube account to start uploading and scheduling videos</p>
+                
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <a href="/login" class="btn btn-google">
+                        <i class="fab fa-google me-2"></i>
+                        Sign in with Google
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="feature-card">
+                <div class="text-center">
+                    <i class="fas fa-upload feature-icon"></i>
+                    <h4>Easy Upload</h4>
+                    <p class="text-muted">Upload videos directly to your YouTube channel with custom titles, descriptions, and tags.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-calendar-alt feature-icon"></i>
+                <h5>Schedule Posts</h5>
+                <p class="text-muted">Schedule your videos to be published at the perfect time for your audience.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <h5>Secure & Private</h5>
+                <p class="text-muted">Your videos and data are secure. We only access what's necessary for uploads.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card text-center">
+                <i class="fas fa-lightning-bolt feature-icon"></i>
+                <h5>Fast & Reliable</h5>
+                <p class="text-muted">Quick uploads with progress tracking and reliable scheduling system.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle me-2"></i>Getting Started</h5>
+                <ol class="mb-0">
+                    <li>Click "Sign in with Google" to authenticate with your YouTube account</li>
+                    <li>Grant necessary permissions for video uploads</li>
+                    <li>Upload your video and add details like title, description, and tags</li>
+                    <li>Choose to publish immediately or schedule for later</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add some interactive elements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate feature cards on hover
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}
+
